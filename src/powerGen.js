@@ -1,0 +1,1 @@
+//this file will contain functions for randomly generating powers
