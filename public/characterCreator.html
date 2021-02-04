@@ -56,7 +56,30 @@ an interactive character creator
         <input type="text" id="powerdescription" name="powerdescription"><br><br>
         <input type="submit" value="Create">
     </form>
-    <script src="" async defer></script>
+    <button onclick="preview()">Preview</button>
+    <script type="text/javascript">
+    function preview(){
+
+      const elements = document.getElementsByClassName("stats");
+      document.getElementById('demo').innerHTML = generatestatcost(y);
+
+    }
+    function generateStatCost(x){
+      var res =0;
+      var i =0;
+      for (i = 0; i <= x; i++){
+        res = res +i;
+      }
+      return res;
+
+    }
+
+    </script>
+    <h3>Deficet Skills Points</h3>
+    <p id="demo"></p>
+    <script src="" async defer>
+
+  </script>
 </body>
 
 </html>
