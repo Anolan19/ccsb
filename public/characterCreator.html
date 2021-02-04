@@ -33,7 +33,7 @@ an interactive character creator
         <label>Stat Points</label>
         <input type="number" id="statpoints" name="statpoints" value="0"><br><br>
         <label>Experience</label>
-        <input type="number" id="xp" name="xp" value="0" class="stats"><br><br>
+        <input type="number" id="xp" name="xp" value="0" ><br><br>
         <label>IQ</label>
         <input type="number" id="iq" name="iq" value="0" class="stats"><br><br>
         <label>Mental Endurance</label>
@@ -59,24 +59,35 @@ an interactive character creator
     <button onclick="preview()">Preview</button>
     <script type="text/javascript">
     function preview(){
-
       const elements = document.getElementsByClassName("stats");
-      document.getElementById('demo').innerHTML = generatestatcost(y);
+      console.log(elements);
+      let y = calculateDeficit(elements);
+
+      document.getElementById('deficitpoints').innerHTML = y;
 
     }
     function generateStatCost(x){
-      var res =0;
-      var i =0;
+      let res =0;
+      let i =0;
       for (i = 0; i <= x; i++){
         res = res +i;
       }
       return res;
-
+    }
+    function calculateDeficit(stat){
+      let y = 0;
+      for(x of stat){
+        console.log(x.value);
+        y += generateStatCost(x.value);
+      }
+      const totstats = parseInt(document.getElementById('statpoints').value);
+      y = totstats-y;
+      return y;
     }
 
     </script>
-    <h3>Deficet Skills Points</h3>
-    <p id="demo"></p>
+    <h3>Statpoints</h3>
+    <p id="deficitpoints"></p>
     <script src="" async defer>
 
   </script>
