@@ -64,23 +64,36 @@ an interactive character creator
 
 
     }
-    function generateStatCost(x){
-      
-
-      for (i = 0, res = 0; i <= x; i++){
-        res = res +i;
+    /** Returns the cost of statpoints for the set level of the stat. Returns a negative number to indicate a gain of statpoints
+    * @param {number} setstat The level the stat is set to
+    * @return {number} result This is the resulting cost of statpoints for the set stat, negative if its a gain of statpoints
+    */
+    function generateStatCost(setStatLevel){
+      setStatLevel = parseInt(setStatLevel);
+      if(setStatLevel < 0){  //Checks if setstatlevel is negative if so returns the negative setstatlevel as a statpoint gain
+        return setStatLevel
+      } else{
+      for (loopIterator = 0, result = 0; loopIterator <= setStatLevel; loopIterator++){  // iterates to find the statpoint cost needed to get a stat to the setstat level
+        result = result +loopIterator;
       }
-      return res;
+      return result; // returns statpoint cost in the case of it being a non negative.
+            }
     }
-    function calculateDeficit(stat){
-      let y = 0;
-      for(x of stat){
-
-        y += generateStatCost(x.value);
+    /** Returns the net cost of set statlevels with current ammount of statpoitns, returns negative if their is a deficit and positive if there is a suprlus of statpoints
+    *@param {htmlcollection} statCollection This is a collection of elements that contain number values within the class 'stats'
+    *@return {number} workingValue This is a number that is the total statpoint cost being either negative or positive depending on if free statpoints remain.
+    */
+    function calculateDeficit(statCollection){
+      let workingValue = 0;
+      for(statValue of statCollection){
+        if(isNaN(statValue.value)){
+          return "Invalid entry";
+        }
+        workingValue += generateStatCost(statValue.value);
       }
-      const totstats = parseInt(document.getElementById('statpoints').value);
-      y = totstats-y;
-      return y;
+      const setStatPoints = parseInt(document.getElementById('statpoints').value);
+      workingValue = setStatPoints-workingValue;
+      return workingValue;
     }
 
     </script>
