@@ -1,0 +1,23 @@
+{
+    "name": "ccsb",
+    "version": "1.0.0",
+    "description": "Cross Country Super Brawl",
+    "main": "index.js",
+    "scripts": {
+        "start": "es-dev-server --app-index public/characterCreator.html --node-resolve --watch --open",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Anolan19/ccsb.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Anolan19/ccsb/issues"
+    },
+    "homepage": "https://github.com/Anolan19/ccsb#readme",
+    "devDependencies": {
+        "es-dev-server": "^2.1.0"
+    }
+}
