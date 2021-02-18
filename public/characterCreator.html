@@ -1,8 +1,6 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+
+
 <html>
 
 <head>
@@ -19,7 +17,7 @@
 </head>
 
 <body>
-    <!--[if lt IE 7]>
+    <!--[if IE]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
     <form id="characterCreator">
@@ -57,11 +55,14 @@
     </form>
     <button onclick="preview()">Preview</button>
     <script type="text/javascript">
+        const form = document.getElementById("characterCreator");
+        form.addEventListener("input", function() {
+            preview();
+        });
+
         function preview() {
             const elements = document.getElementsByClassName("stats");
             document.getElementById('deficitpoints').innerHTML = calculateDeficit(elements)
-
-
         }
         /** Returns the cost of statpoints for the set level of the stat. Returns a negative number to indicate a gain of statpoints
          * @param {number} setstat The level the stat is set to
@@ -79,8 +80,8 @@
             }
         }
         /** Returns the net cost of set statlevels with current ammount of statpoitns, returns negative if their is a deficit and positive if there is a suprlus of statpoints
-         *@param {htmlcollection} statCollection This is a collection of elements that contain number values within the class 'stats'
-         *@return {number} workingValue This is a number that is the total statpoint cost being either negative or positive depending on if free statpoints remain.
+         * @param {htmlcollection} statCollection This is a collection of elements that contain number values within the class 'stats'
+         * @return {number} workingValue This is a number that is the total statpoint cost being either negative or positive depending on if free statpoints remain.
          */
         function calculateDeficit(statCollection) {
             let workingValue = 0;
@@ -95,20 +96,32 @@
             return workingValue;
         }
 
+        /** Listens to the form submission, takes the values of the form, puts them into json, and puts it into a cookie called "value".
+         * @param {event} event The submission of the 'characterCreator' form, captured and instead of being sent to an endpoint, it is set as the value of the cookie "value".
+         */
         document.getElementById('characterCreator').onsubmit = function(event) {
             event.preventDefault();
-            const data = new FormData(event.target);
-            const value = JSON.stringify(Object.fromEntries(data.entries()));
+            const elements = document.getElementsByClassName("stats");
+            if (calculateDeficit(elements) < 0) {
+                alert("Not enough stat points for selected stats.  Check your remaining points.");
+            } else {
 
-            //Turn this JSON object into a cookie
-            setCookie("value", value, 365);
-            //console.log(getCookie("value"));
+                const data = new FormData(event.target);
+                const value = JSON.stringify(Object.fromEntries(data.entries()));
 
-            //and take us to the character sheet page to see our new character stats
-            window.location.href = "characterSheet.html";
+                //Put this JSON string into a cookie
+                setCookie("value", value, 365);
+
+                //and take us to the character sheet page to see our new character stats
+                window.location.href = "characterSheet.html";
+            }
         };
 
-
+        /** Takes in the cookie name, value, and number of days to keep it before deletion.  Creates on the local path=/
+         * @param {string} cname This is the name of the cookie, which will be used to reference it when accessing it
+         * @param {string} cvalue The string that will be set as the cookie's value, in this specific usage, a stringified JSON object containing the character's information taken from the HTML form
+         * @param {integer} exdays Number of days the browser should store this cookie.  Broken down from days into milliseconds
+         */
         function setCookie(cname, cvalue, exdays) {
             var d = new Date();
             d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -117,7 +130,7 @@
         }
 
 
-        //for testing cookies, not to be used
+        //for testing cookies, not to be used here
         /*
         function getCookie(cname) {
             var name = cname + "=";
