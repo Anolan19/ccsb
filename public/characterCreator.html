@@ -1,1 +1,136 @@
-an interactive character creator 
+<!DOCTYPE html>
+
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <style>
+
+    </style>
+
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+</head>
+
+<body>
+    <!--[if IE]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+    <form id="characterCreator">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" class=""><br><br>
+        <label for="nickname">Nickname</label>
+        <input type="text" id="nickname" name="nickname" class=""><br><br>
+        <label for="lvl">Level</label>
+        <input type="number" id="lvl" name="lvl" value="1" class=""><br><br>
+        <label for="statpoints">Stat Points</label>
+        <input type="number" id="statpoints" name="statpoints" value="0" class=""><br><br>
+        <label for="xp">Experience</label>
+        <input type="number" id="xp" name="xp" value="0" class="xp"><br><br>
+        <label for="iq">IQ</label>
+        <input type="number" id="iq" name="iq" value="0" class="stats mental"><br><br>
+        <label for="mEndurance">Mental Endurance</label>
+        <input type="number" id="mEndurance" name="mEndurance" value="0" class="stats mental"><br><br>
+        <label for="mAffinity">Mental Affinity</label>
+        <input type="number" id="mAffinity" name="mAffinity" value="0" class="stats mental"><br><br>
+        <label for="pStrength">Physical Strength</label>
+        <input type="number" id="pStrength" name="pStrength" value="0" class="stats physical"><br><br>
+        <label for="pProwess">Physical Prowess</label>
+        <input type="number" id="pProwess" name="pProwess" value="0" class="stats physical"><br><br>
+        <label for="pEndurance">Physical Endurance</label>
+        <input type="number" id="pEndurance" name="pEndurance" value="0" class="stats physical"><br><br>
+        <label for="speed">Speed</label>
+        <input type="number" id="speed" name="speed" value="0" class="stats speed"><br><br>
+        <label for="wealth">Wealth</label>
+        <input type="number" id="wealth" name="wealth" value="2" class="wealth"><br><br>
+        <label for="powername">Power Name</label>
+        <input type="text" id="powername" name="powername" class="power"><br><br>
+        <label for="powerdescription">Power Description</label>
+        <input type="text" id="powerdescription" name="powerdescription" class="power"><br><br>
+        <input type="submit" value="Create">
+    </form>
+    <button onclick="preview()">Preview</button>
+    <script type="text/javascript">
+        const form = document.getElementById("characterCreator");
+        form.addEventListener("input", function() {
+            preview();
+        });
+
+        function preview() {
+            const elements = document.getElementsByClassName("stats");
+            document.getElementById('deficitpoints').innerHTML = calculateDeficit(elements)
+        }
+        /** Returns the cost of statpoints for the set level of the stat. Returns a negative number to indicate a gain of statpoints
+         * @param {number} setstat The level the stat is set to
+         * @return {number} result This is the resulting cost of statpoints for the set stat, negative if its a gain of statpoints
+         */
+        function generateStatCost(setStatLevel) {
+            setStatLevel = parseInt(setStatLevel);
+            if (setStatLevel < 0) { //Checks if setstatlevel is negative if so returns the negative setstatlevel as a statpoint gain
+                return setStatLevel
+            } else {
+                for (loopIterator = 0, result = 0; loopIterator <= setStatLevel; loopIterator++) { // iterates to find the statpoint cost needed to get a stat to the setstat level
+                    result = result + loopIterator;
+                }
+                return result; // returns statpoint cost in the case of it being a non negative.
+            }
+        }
+        /** Returns the net cost of set statlevels with current ammount of statpoitns, returns negative if their is a deficit and positive if there is a suprlus of statpoints
+         * @param {htmlcollection} statCollection This is a collection of elements that contain number values within the class 'stats'
+         * @return {number} workingValue This is a number that is the total statpoint cost being either negative or positive depending on if free statpoints remain.
+         */
+        function calculateDeficit(statCollection) {
+            let workingValue = 0;
+            for (statValue of statCollection) {
+                if (isNaN(statValue.value)) {
+                    return "Invalid entry";
+                }
+                workingValue += generateStatCost(statValue.value);
+            }
+            const setStatPoints = parseInt(document.getElementById('statpoints').value);
+            workingValue = setStatPoints - workingValue;
+            return workingValue;
+        }
+
+        /** Listens to the form submission, takes the values of the form, puts them into json, and puts it into a cookie called "value".
+         * @param {event} event The submission of the 'characterCreator' form, captured and instead of being sent to an endpoint, it is set as the value of the cookie "value".
+         */
+        document.getElementById('characterCreator').onsubmit = function(event) {
+            event.preventDefault();
+            const elements = document.getElementsByClassName("stats");
+            if (calculateDeficit(elements) < 0) {
+                //check if you can afford the stats you have selected
+                alert("Not enough stat points for selected stats.  Check your remaining points.");
+            } else {
+                //take the form's data, make it JSON, and turn the JSON into a string of itself for storage as a cookie
+                const data = new FormData(event.target);
+                const value = JSON.stringify(Object.fromEntries(data.entries()));
+
+                //Put this JSON string into a cookie
+                setCookie("value", value, 365);
+
+                //and take us to the character sheet page to see our new character stats
+                window.location.href = "characterSheet.html";
+            }
+        };
+
+        /** Takes in the cookie name, value, and number of days to keep it before deletion.  Creates on the local path=/
+         * @param {string} cname This is the name of the cookie, which will be used to reference it when accessing it
+         * @param {string} cvalue The string that will be set as the cookie's value, in this specific usage, a stringified JSON object containing the character's information taken from the HTML form
+         * @param {integer} exdays Number of days the browser should store this cookie.  Broken down from days into milliseconds
+         */
+        function setCookie(cname, cvalue, exdays) {
+            document.cookie = cname + "=" + cvalue + ";" + "max-age=" + new Date().setTime(new Date().getTime() + (exdays * 86400000)) + ";path=/"; //create cookie, setting its expiration in milliseconds.  24 hours per day, 60 minutes per hour, 60 seconds per minute, and 1000 milliseconds per second = 86,400,000 milliseconds per day
+        }
+    </script>
+    <p style="font-size:25px">Remaining Stat Points</p>
+    <p id="deficitpoints"></p>
+    <script src="" async defer>
+    </script>
+</body>
+
+</html>
