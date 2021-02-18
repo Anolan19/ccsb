@@ -48,23 +48,25 @@ an interactive character sheet
             const data = JSON.parse(getCookie("value"));
 
             Object.entries(data).forEach(([key, value]) => {
-                //console.log(`${key} ${value}`);
+                //set the value of each key to its value in the JSON
                 document.getElementById(`${key}`).value = `${value}`;
             })
         }
 
         function getCookie(cname) {
-            var name = cname + "=";
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
+            for (i = 0, ca = document.cookie.split(';'), name = cname + "="; i < ca.length; i++) {
+                //goes through until it hits the name's index
+                const c = ca[i];
                 while (c.charAt(0) == ' ') {
+                    //should not get here, we are only dealing with our own cookies, and they cannot start with a space.  Possibly useful if we let people input their own json files for characters
                     c = c.substring(1);
                 }
                 if (c.indexOf(name) == 0) {
+                    //parse the output that doesn't include the name and any other formatting characters
                     return c.substring(name.length, c.length);
                 }
             }
+            //return an empty string if things go wrong
             return "";
         }
     </script>

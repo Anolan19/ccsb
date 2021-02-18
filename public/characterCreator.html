@@ -103,9 +103,10 @@
             event.preventDefault();
             const elements = document.getElementsByClassName("stats");
             if (calculateDeficit(elements) < 0) {
+                //check if you can afford the stats you have selected
                 alert("Not enough stat points for selected stats.  Check your remaining points.");
             } else {
-
+                //take the form's data, make it JSON, and turn the JSON into a string of itself for storage as a cookie
                 const data = new FormData(event.target);
                 const value = JSON.stringify(Object.fromEntries(data.entries()));
 
@@ -123,30 +124,8 @@
          * @param {integer} exdays Number of days the browser should store this cookie.  Broken down from days into milliseconds
          */
         function setCookie(cname, cvalue, exdays) {
-            var d = new Date();
-            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-            var expires = "expires=" + d.toUTCString();
-            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+            document.cookie = cname + "=" + cvalue + ";" + "max-age=" + new Date().setTime(new Date().getTime() + (exdays * 86400000)) + ";path=/"; //create cookie, setting its expiration in milliseconds.  24 hours per day, 60 minutes per hour, 60 seconds per minute, and 1000 milliseconds per second = 86,400,000 milliseconds per day
         }
-
-
-        //for testing cookies, not to be used here
-        /*
-        function getCookie(cname) {
-            var name = cname + "=";
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                    return c.substring(name.length, c.length);
-                }
-            }
-            return "";
-        }
-        */
     </script>
     <p style="font-size:25px">Remaining Stat Points</p>
     <p id="deficitpoints"></p>
